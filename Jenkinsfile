@@ -37,6 +37,30 @@ pipeline {
                 sh "mvn failsafe:integration-test failsafe:verify"
             }
         }
+		stage('Package') {
+            steps {
+                sh "mvn package -DskipTests"
+            }
+        }
+		stage('Build docker image') {
+			steps {
+				// sh "docker build -t ankitprowess/currency-exchange-devops:$env.BUILD_TAG"
+				scripts {
+					dockerImage=docker.build("ankitprowess/currency-exchange-devops:${env.BUILD_TAG}")
+				}
+			}
+		}
+
+		stage('Build docker image') {
+			steps {
+				scripts {
+					docker.withRegistry('', 'dockerhub') {
+						dockerImage.push("");
+						dockerImage.push("Latest");
+					}
+				}
+			}
+		}
     }
 
     post {
