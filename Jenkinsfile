@@ -1,4 +1,4 @@
-#DECLARATIVE
+// DECLARATIVE
 pipeline{
 	agent any
 	stages {
