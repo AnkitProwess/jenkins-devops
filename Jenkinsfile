@@ -1,3 +1,6 @@
+// Define the variable globally at the top so it can be shared between stages
+def dockerImage = null
+
 // DECLARATIVE
 pipeline {
     agent any
@@ -37,30 +40,28 @@ pipeline {
                 sh "mvn failsafe:integration-test failsafe:verify"
             }
         }
-		stage('Package') {
+        stage('Package') {
             steps {
                 sh "mvn package -DskipTests"
             }
         }
-		stage('Build docker image') {
-			steps {
-				// sh "docker build -t ankitprowess/currency-exchange-devops:$env.BUILD_TAG"
-				scripts {
-					dockerImage=docker.build("ankitprowess/currency-exchange-devops:${env.BUILD_TAG}")
-				}
-			}
-		}
-
-		stage('Build docker image') {
-			steps {
-				scripts {
-					docker.withRegistry('', 'dockerhub') {
-						dockerImage.push("");
-						dockerImage.push("Latest");
-					}
-				}
-			}
-		}
+        stage('Build docker image') {
+            steps {
+                script {
+                    dockerImage = docker.build("ankitprowess/currency-exchange-devops:${env.BUILD_TAG}")
+                }
+            }
+        }
+        stage('Push docker image') {
+            steps {
+                script {
+                    docker.withRegistry('', 'dockerhub') {
+                        dockerImage.push()          
+                        dockerImage.push("latest")  
+                    }
+                }
+            }
+        }
     }
 
     post {
