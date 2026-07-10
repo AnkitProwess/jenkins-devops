@@ -21,14 +21,19 @@ pipeline{
 				echo "BUILD_URL - $env.BUILD_URL"
 			}
 		}
+		stage('Compile') {
+			steps{
+				echo "mvn clean compile"
+			}
+		}
 		stage('Test') {
 			steps{
-				echo "Test"
+				echo "mvn Test"
 			}
 		}
 		stage('Integration Test') {
 			steps{
-				echo "Integration Test"
+				echo "mvn failsafe:integration-test failsafe:verify"
 			}
 		}
 	} 
