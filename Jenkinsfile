@@ -2,10 +2,11 @@
 pipeline {
     agent any
     environment {
-		jdkHome = tool "myJava11"
+        jdkHome = tool "myJava11"
         dockerHome = tool "myDocker"
         mavenHome = tool "myMaven"
-        PATH = "$jdkHome/bin:$dockerHome/bin:$mavenHome/bin:$PATH"
+        JAVA_HOME = "${jdkHome}"
+        PATH = "${jdkHome}/bin:${dockerHome}/bin:${mavenHome}/bin:${PATH}"
     }
     stages {
         stage('Checkout') {
@@ -36,8 +37,8 @@ pipeline {
                 sh "mvn failsafe:integration-test failsafe:verify"
             }
         }
-    } 
-    
+    }
+
     post {
         always {
             echo "Runs Always"
